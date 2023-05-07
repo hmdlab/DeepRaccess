@@ -60,12 +60,12 @@ python3 test.py \
 ```
 You can check the options with `python test.py --help`.
 
-After successful test, output accessibility(OUT_FILE/output.csv) and scatter plot (.png) are created.
+After successful test, output accessibility(OUT_FILE/output.csv) and scatter plot (scatter.png) are created.
 
 ## 4. Prediction
 #### 4.1 Preparation of learned weights (same as 3.1)
 You can test the performance of DeepRaccess using the learned weights.  
-Download the pre-trained weights [here](https://drive.google.com/drive/folders/1xJOV2vIoVYCx6i9YY70CWwEGacQw8jTP?usp=sharing) (FCN_***.pth is the highest accuracy)  
+[Download the pre-trained weights here](https://drive.google.com/drive/folders/1xJOV2vIoVYCx6i9YY70CWwEGacQw8jTP?usp=sharing) (FCN_***.pth is the highest accuracy)  
 Then place them in the path directory.
 
 
