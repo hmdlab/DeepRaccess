@@ -17,8 +17,8 @@ pip install -r requirements.txt
 
 ## 2. Train (Skip this section if you only want to make predictions)
 #### 2.1 Data preparation
-Training data can be artificially created.
-Create fasta files like the sequence directory of sample_data.
+Training data can be artificially created.  
+Create fasta files like the sequence directory of sample_data.  
 Use an existing accessibility prediction tool (e.g. Raccess) to create a csv file like the accessiblity directory of sample_data.
 
 
@@ -40,8 +40,8 @@ After successful training, trained weights (.pth), scatter plot (.png) and logs 
 ## 3. Test (Skip this section if you only want to make predictions)
 #### 3.1 Preparation of learned weights
 
-You can test the performance of DeepRaccess using the learned weights.
-[Download the pre-trained weights here](https://drive.google.com/drive/folders/1xJOV2vIoVYCx6i9YY70CWwEGacQw8jTP?usp=sharing) (FCN_***.pth is the highest accuracy)
+You can test the performance of DeepRaccess using the learned weights.  
+[Download the pre-trained weights here](https://drive.google.com/drive/folders/1xJOV2vIoVYCx6i9YY70CWwEGacQw8jTP?usp=sharing) (FCN_***.pth is the highest accuracy)  
 Then place them in the path directory.
 
 
@@ -64,8 +64,8 @@ After successful test, output accessibility(OUT_FILE/output.csv) and scatter plo
 
 ## 4. Prediction
 #### 4.1 Preparation of learned weights (same as 3.1)
-You can test the performance of DeepRaccess using the learned weights.
-Download the pre-trained weights [here](https://drive.google.com/drive/folders/1xJOV2vIoVYCx6i9YY70CWwEGacQw8jTP?usp=sharing) (FCN_***.pth is the highest accuracy)
+You can test the performance of DeepRaccess using the learned weights.  
+Download the pre-trained weights [here](https://drive.google.com/drive/folders/1xJOV2vIoVYCx6i9YY70CWwEGacQw8jTP?usp=sharing) (FCN_***.pth is the highest accuracy)  
 Then place them in the path directory.
 
 
@@ -82,4 +82,5 @@ python3 predict.py \
     --pretrain path/FCN_structured.pth
 ```
 You can check the options with `python predict.py --help`.
+
 After successful test, output accessibility file(OUT_FILE/output.csv) is created.
