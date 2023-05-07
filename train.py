@@ -122,7 +122,7 @@ def train(device, model, train_dl, val_dl, criterion, optimizer, epochs, name):
         print(f"Epoch {epoch+1}/{epochs}")
 
         for phase in ["train", "val"]:
-            if device=="cuda":
+            if device == "cuda":
                 start_event = torch.cuda.Event(enable_timing=True)
                 end_event = torch.cuda.Event(enable_timing=True)
                 start_event.record()
@@ -172,7 +172,7 @@ def train(device, model, train_dl, val_dl, criterion, optimizer, epochs, name):
                         epoch_loss += loss.item() * data.size(0)
                 avg_loss = epoch_loss / len(val_dl.dataset)
 
-            if device=="cuda":
+            if device == "cuda":
                 end_event.record()
                 torch.cuda.synchronize()
                 elapsed_time = start_event.elapsed_time(end_event) * 1000
@@ -216,15 +216,34 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     parser = argparse.ArgumentParser(description="DeepRaccess")
-    parser.add_argument("--seqdir", "-s", required=True)
-    parser.add_argument("--accdir", "-a", required=True)
-
-    parser.add_argument("--epoch", "-e", type=int, default=10)
-    parser.add_argument("--batch", "-b", type=int, default=256, help="batch size")
     parser.add_argument(
-        "--model", choices=["FCN", "Unet", "BERT", "RNABERT"], default="FCN"
+        "--seqdir",
+        "-s",
+        required=True,
+        help="Directory of input sequences in fasta format.",
     )
-    parser.add_argument("--name", default=f"{dt_now}")
+    parser.add_argument(
+        "--accdir",
+        "-a",
+        required=True,
+        help="Directory of target accessibility in csv format.",
+    )
+
+    parser.add_argument(
+        "--epoch", "-e", type=int, default=10, help="Number of learning epochs"
+    )
+    parser.add_argument("--batch", "-b", type=int, default=256, help="Batch size")
+    parser.add_argument(
+        "--model",
+        choices=["FCN", "Unet", "BERT", "RNABERT"],
+        default="FCN",
+        help="Neural Network Architecture",
+    )
+    parser.add_argument(
+        "--name",
+        default=f"{dt_now}",
+        help="This is the name you give to the PATH, LOG and SCATTER for this training. Default is the timestamp of the start time.",
+    )
 
     args = parser.parse_args()
 

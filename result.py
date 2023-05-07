@@ -8,7 +8,9 @@ from datetime import datetime, timedelta, timezone
 import torch
 
 
-def plot_result(y_true: np.array, y_est: np.array, lims=[-1.5, 20], mode="save", name=None) -> None:
+def plot_result(
+    y_true: np.array, y_est: np.array, lims=[-1.5, 20], mode="save", name=None
+) -> None:
     fig, ax = plt.subplots(1, 1, dpi=150, figsize=(5, 5))
     heatmap, xedges, yedges = np.histogram2d(
         y_true, y_est, bins=100, range=(lims, lims)

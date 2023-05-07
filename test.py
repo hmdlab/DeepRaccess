@@ -162,7 +162,7 @@ def test(device, model, dataloader, criterion):
 
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    if device=="cuda":
+    if device == "cuda":
         start_event = torch.cuda.Event(enable_timing=True)
         end_event = torch.cuda.Event(enable_timing=True)
         start_event.record()
@@ -170,19 +170,28 @@ def main():
         start = time.time()
 
     parser = argparse.ArgumentParser(description="DeepRaccess")
-    parser.add_argument("--seqfile", "-s", required=True)
-    parser.add_argument("--accfile", "-a", required=True)
-    parser.add_argument("--outfile", "-o", required=True)
+    parser.add_argument(
+        "--seqfile", "-s", required=True, help="Input sequences in fasta format."
+    )
+    parser.add_argument(
+        "--accfile", "-a", required=True, help="Target accessibility in csv format."
+    )
+    parser.add_argument(
+        "--outfile", "-o", required=True, help="File name for Output accessibility"
+    )
 
-    parser.add_argument("--batch", "-b", type=int, default=256, help="batch size")
+    parser.add_argument("--batch", "-b", type=int, default=256, help="Batch size")
     parser.add_argument(
         "--pretrain",
         "-p",
         default="path/FCN_structured.pth",
-        help="path of pretrained weight",
+        help="Path of pretrained weight",
     )
     parser.add_argument(
-        "--model", choices=["FCN", "Unet", "BERT", "RNABERT"], default="FCN"
+        "--model",
+        choices=["FCN", "Unet", "BERT", "RNABERT"],
+        default="FCN",
+        help="Neural Network Architecture",
     )
 
     args = parser.parse_args()
@@ -223,7 +232,7 @@ def main():
         np.array(target_rem), np.array(output_rem), mode="save", name=f"scatter.png"
     )
 
-    if device=="cuda":
+    if device == "cuda":
         end_event.record()
         torch.cuda.synchronize()
         test_time = start_event.elapsed_time(end_event) * 1000

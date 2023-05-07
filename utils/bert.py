@@ -1,9 +1,10 @@
 import copy
 import math
 import json
+
 # from attrdict import AttrDict
 # import collections
-from easydict import EasyDict as AttrDict #Substitute for import error in attrdict
+from easydict import EasyDict as AttrDict  # Substitute for import error in attrdict
 
 import torch
 from torch import nn

@@ -79,7 +79,9 @@ def make_dl(seq_data_path, batch_size):
         low_seq = low_seq.view(-1, length)
 
     ds_ACC = AccDataset(low_seq)
-    dl_ACC = torch.utils.data.DataLoader(ds_ACC, batch_size, num_workers=2, shuffle=False)
+    dl_ACC = torch.utils.data.DataLoader(
+        ds_ACC, batch_size, num_workers=2, shuffle=False
+    )
 
     return dl_ACC, flag, division
 
@@ -126,18 +128,25 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     parser = argparse.ArgumentParser(description="DeepRaccess")
-    parser.add_argument("--seqfile", "-s", required=True)
-    parser.add_argument("--outfile", "-o", required=True)
+    parser.add_argument(
+        "--seqfile", "-s", required=True, help="Input sequences in fasta format."
+    )
+    parser.add_argument(
+        "--outfile", "-o", required=True, help="File name for Output accessibility"
+    )
 
-    parser.add_argument("--batch", "-b", type=int, default=256, help="batch size")
+    parser.add_argument("--batch", "-b", type=int, default=256, help="Batch size")
     parser.add_argument(
         "--pretrain",
         "-p",
         default="path/FCN_structured.pth",
-        help="path of pretrained weight",
+        help="Path of pretrained weight",
     )
     parser.add_argument(
-        "--model", choices=["FCN", "Unet", "BERT", "RNABERT"], default="FCN"
+        "--model",
+        choices=["FCN", "Unet", "BERT", "RNABERT"],
+        default="FCN",
+        help="Neural Network Architecture",
     )
 
     args = parser.parse_args()
