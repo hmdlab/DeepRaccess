@@ -8,27 +8,9 @@ import torch
 from Bio import SeqIO
 from scipy.stats import spearmanr
 from utils.bert import BertModel, get_config
-from datetime import datetime, timedelta, timezone
 
-import result
+import process
 import mymodel
-
-
-def get_JST_time():
-    JST = timezone(timedelta(hours=+9), "JST")
-    dt_now = datetime.now(JST)
-    dt_now = dt_now.strftime("%Y%m%d-%H%M%S")
-    return dt_now
-
-
-def model_device(model, device):
-    print("device: ", device)
-    model.to(device)
-    model = torch.nn.DataParallel(model, device_ids=[0, 1, 2, 3])  # make parallel
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-    return model
-
 
 class AccDataset(torch.utils.data.Dataset):
     def __init__(self, low_seq, accessibility):
@@ -46,18 +28,6 @@ class AccDataset(torch.utils.data.Dataset):
         return out_low_seq, out_accessibility
 
 
-def convert(seqs, kmer_dict, max_length):
-    # 文字列リストを数字に変換
-    seq_idx = []
-    if not max_length:
-        max_length = max([len(i) for i in seqs])
-    for s in seqs:
-        # AUTGC以外の不確定塩基はMASK
-        convered_seq = [kmer_dict[i] if i in kmer_dict.keys() else 1 for i in s] + [
-            0
-        ] * (max_length - len(s))
-        seq_idx.append(convered_seq)
-    return seq_idx
 
 
 def make_dl(seq_data_paths, acc_data_paths, batch_size):
@@ -72,13 +42,13 @@ def make_dl(seq_data_paths, acc_data_paths, batch_size):
             seqs.append(seq)
     seqs_len = np.tile(np.array([len(i) for i in seqs]), 1)
 
-    # 配列文字列をindexリストに変換してゼロpadding
+    # Convert array string to index list with zero padding
     bases_list = []
     for seq in seqs:
         bases = list(seq)
         bases_list.append(bases)
     idx_dict = {"MASK": 1, "A": 2, "U": 3, "T": 3, "G": 4, "C": 5}
-    low_seq = torch.tensor(np.array(convert(bases_list, idx_dict, max_length)))
+    low_seq = torch.tensor(np.array(process.convert(bases_list, idx_dict, max_length)))
 
     data_sets = acc_data_paths
     accessibility = []
@@ -212,7 +182,8 @@ def train(device, model, train_dl, val_dl, criterion, optimizer, epochs, name):
 
 
 def main():
-    dt_now = get_JST_time()
+    print('===start training===')
+    dt_now = process.get_JST_time()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     parser = argparse.ArgumentParser(description="DeepRaccess")
@@ -262,9 +233,9 @@ def main():
         model = getattr(mymodel, "RBERT")(model)
     else:
         model = getattr(mymodel, model_type)()
-    model = model_device(model, device)
+    model = process.model_device(model, device)
     model = model.module.to(device)
-    model.apply(mymodel.weight_init)  # 重みの初期化適用
+    model.apply(mymodel.weight_init)
     if model_type == "RNABERT":
         model.load_state_dict(torch.load("path/utils_bertrna.pth"), strict=False)
 
@@ -282,7 +253,7 @@ def main():
         val_time_list,
     ) = train(device, model, train_dl, val_dl, criterion, optimizer, epochs, name)
 
-    target_rem, output_rem = result.remove_padding(
+    target_rem, output_rem = process.remove_padding(
         torch.tensor(target_all), torch.tensor(output_all)
     )
     all_loss = (
@@ -292,7 +263,7 @@ def main():
         np.array(target_rem).flatten(), np.array(output_rem).flatten()
     )
     print(f"normMSEloss{all_loss}, correlation{correlation}, pvalue{pvalue}")
-    result.plot_result(
+    process.plot_result(
         np.array(target_rem), np.array(output_rem), mode="save", name=f"{name}.png"
     )
 
@@ -308,6 +279,7 @@ def main():
         f.writelines(f"optimizer: {optimizer} \n")
         f.writelines(f"model: {model} \n")
 
+    print('===finish training===')
 
 if __name__ == "__main__":
     main()
