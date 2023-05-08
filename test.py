@@ -8,17 +8,8 @@ from Bio import SeqIO
 from scipy.stats import spearmanr
 from utils.bert import BertModel, get_config
 
-import result
+import process
 import mymodel
-
-
-def model_device(model, device):
-    print("device: ", device)
-    model.to(device)
-    model = torch.nn.DataParallel(model, device_ids=[0, 1, 2, 3])  # make parallel
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-    return model
 
 
 class AccDataset(torch.utils.data.Dataset):
@@ -35,18 +26,6 @@ class AccDataset(torch.utils.data.Dataset):
         out_accessibility = self.accessibility[idx]
 
         return out_low_seq, out_accessibility
-
-
-def convert(seqs, kmer_dict, max_length):
-    # Convert string list to numbers
-    seq_idx = []
-    if not max_length:
-        max_length = max([len(i) for i in seqs])
-    for s in seqs:
-        # MASK for bases except AUTGC
-        convered_seq = [kmer_dict[i] if i in kmer_dict.keys() else 1 for i in s] + [0] * (max_length - len(s))
-        seq_idx.append(convered_seq)
-    return seq_idx
 
 
 def make_dl(seq_data_path, acc_data_path, batch_size):
@@ -73,7 +52,7 @@ def make_dl(seq_data_path, acc_data_path, batch_size):
         bases = list(seq)
         bases_list.append(bases)
     idx_dict = {"MASK": 1, "A": 2, "U": 3, "T": 3, "G": 4, "C": 5}
-    low_seq = torch.tensor(np.array(convert(bases_list, idx_dict, max_length)))
+    low_seq = torch.tensor(np.array(process.convert(bases_list, idx_dict, max_length)))
 
     if flag:  # windowing
         splited_seq = []
@@ -161,6 +140,7 @@ def test(device, model, dataloader, criterion):
 
 
 def main():
+    print('===start test===')
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     if device == "cuda":
         start_event = torch.cuda.Event(enable_timing=True)
@@ -210,7 +190,7 @@ def main():
         model = getattr(mymodel, "RBERT")(model)
     else:
         model = getattr(mymodel, model_type)()
-    model = model_device(model, device)
+    model = process.model_device(model, device)
     model.load_state_dict(
         torch.load(args.pretrain, map_location=device)["model_state_dict"]
     )
@@ -221,14 +201,14 @@ def main():
     target, output = windowed(target, output, flag, division)
 
     np.savetxt(args.outfile, output, delimiter=",")
-    target_rem, output_rem = result.remove_padding(
+    target_rem, output_rem = process.remove_padding(
         torch.tensor(target), torch.tensor(output)
     )
     correlation, pvalue = spearmanr(
         np.array(target_rem).flatten(), np.array(output_rem).flatten()
     )
     print(f"correlation:{correlation:.4f}, pvalue:{pvalue:.4f}")
-    result.plot_result(
+    process.plot_result(
         np.array(target_rem), np.array(output_rem), mode="save", name=f"scatter.png"
     )
 
@@ -241,6 +221,7 @@ def main():
         test_time = finish - start
     print(f"Timer:{test_time:.4f} s")
 
+    print('===finish test===')
 
 if __name__ == "__main__":
     main()

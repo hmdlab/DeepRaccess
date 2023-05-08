@@ -1,7 +1,7 @@
 # DeepRaccess
 This repository includes the implementation of "DeepRaccess: High-speed RNA accessibility prediction using deep learning". Please cite this paper if you use our code or system output.
 
-In this package, we provides resources including: source codes of the DeepRaccess model, pretrained weights, train/test/predict module.
+In this package, we provides resources including: source codes of the DeepRaccess model, pretrained weights, and train/test/predict module.
 
 ## 1. Environment setup
 It is recommended to install in a virtual environment such as conda, docker or otherwise. We have confirmed that it works up to python 3.6.8 and python 3.8.12. Please refer to `requiremets.txt` for the modules our code requires. Also, at least one NVIDIA GPU is required for higher speeds.
@@ -18,8 +18,8 @@ pip install -r requirements.txt
 ## 2. Train (Skip this section if you only want to make predictions)
 #### 2.1 Data preparation
 Training data can be artificially created.  
-Create fasta files like the sequence directory of `sample_data`.  
-Use an existing accessibility prediction tool (e.g. Raccess) to create a csv file like the accessiblity directory of `sample_data`.
+Create fasta files like `sample_data/sequence/***.fa`.  
+Use an existing accessibility prediction tool (e.g. Raccess) to create a csv file like `sample_data/accessibility/***.csv`.
 
 
 #### 2.2 Model training
@@ -42,7 +42,7 @@ After successful training, trained weights (`.pth`), scatter plot (`.png`) and l
 
 You can test the performance of DeepRaccess using the learned weights.  
 [Download the pre-trained weights here](https://drive.google.com/drive/folders/1xJOV2vIoVYCx6i9YY70CWwEGacQw8jTP?usp=sharing) (`FCN_***.pth` is the highest accuracy)  
-Then place them in the `path` directory.
+Then place them in `path/`.
 
 
 #### 3.2 Model test
@@ -66,7 +66,7 @@ After successful test, output accessibility(OUT_FILE/`output.csv`) and scatter p
 #### 4.1 Preparation of learned weights (same as 3.1)
 You can test the performance of DeepRaccess using the learned weights.  
 [Download the pre-trained weights here](https://drive.google.com/drive/folders/1xJOV2vIoVYCx6i9YY70CWwEGacQw8jTP?usp=sharing) (`FCN_***.pth` is the highest accuracy)  
-Then place them in the `path` directory.
+Then place them in `path/`.
 
 
 #### 4.2 Predicting Accessibility
