@@ -55,7 +55,7 @@ python3 test.py \
     --model FCN \
     --pretrain path/FCN_structured.pth \
 ```
-You can check the software options with `python test.py --help`. Successful test produces the predicted accessibility (OUT_FILE/`output.csv`) and scatter plot (`scatter.png`).
+You can check the software options with `python test.py --help`. Successful test produces the predicted accessibility (`output.csv`) and scatter plot (`scatter.png`).
 
 ## 4. Prediction
 #### 4.1 Preparation of trained weights (as in 3.1)
@@ -75,7 +75,7 @@ python3 predict.py \
 ```
 You can check the software options with `python test.py --help`.
 
-Successful test produces the predicted accessibility (OUT_FILE/`output.csv`).
+Successful test produces the predicted accessibility (`output.csv`).
 
 ## 5. Brief explanation of interpretation
 We used the fully convolutional network (FCN) for the network architecture. FCN does not use fully connected layers and is composed only of convolutional layers. We used a network of 40 convolutional layers with constant channel and unit sizes. The input RNA sequences are embedded into numerical vectors and fed into the neural networks. Our embedding first randomly generates six 120-dimensional numerical vectors corresponding to each of the six states: four RNA bases (A, C, G, U), one undetermined nucleotide (N) and padding. Please see our paper for implementation details.
