@@ -1,12 +1,14 @@
 # DeepRaccess
-This repository includes the implementation of "DeepRaccess: High-speed RNA accessibility prediction using deep learning". Please cite this paper if you use our code or system output.
+This repository includes the implementation of DeepRaccess, high-speed RNA accessibility prediction on GPU environmentsusing deep learning. Please cite the following paper if you use our code or system output.
 
-In this package, we provides resources including: source codes of the DeepRaccess model, pretrained weights, and train/test/predict module.
+Kaisei Hara, Natuki Iwano, Tsukasa Fukunaga and Michiaki Hamada. "DeepRaccess: High-speed RNA accessibility prediction using deep learning." (under submission)
+
+In this package, we provide the source code of the DeepRaccess software, pre-trained models, and modules for training, test and prediction.　For instructions on how to use it, please refer to the explanation below, as well as the `demo.ipynb` file which provides an end-to-end workflow demonstration.
 
 ## 1. Environment setup
-It is recommended to install in a virtual environment such as conda, docker or otherwise. We have confirmed that it works up to python 3.6.8 and python 3.8.12. Please refer to `requiremets.txt` for the modules our code requires. Also, at least one NVIDIA GPU is required for higher speeds.
+We recommend the use of a virtual environment such as Conda or Docker for installation. We have tested compatibility with Python versions 3.6.8 and 3.8.12. Please refer to `requirements.txt` for the additional modules required by DeepRaccess. Note that, for faster computation of accessibility, at least one NVIDIA GPU is required.
 
-#### 1.1 Install the package and other requiremments
+#### 1.1 Installation of the package and the other requirements
 (Required)
 ```
 git clone https://github.com/hmdlab/DeepRaccess.git
@@ -15,12 +17,10 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-## 2. Train (Skip this section if you only want to make predictions)
+## 2. Training (You can skip this section when you only use the pre-trained DeepRaccess model)
 #### 2.1 Data preparation
-Training data can be artificially created.  
-Create fasta files like `sample_data/sequence/***.fa`.  
-Use an existing accessibility prediction tool (e.g. Raccess) to create a csv file like `sample_data/accessibility/***.csv`.
-
+Please prepare an input sequence file as a fasta file such as `sample_data/sequence/***.fa`.  
+In addition, please prepare the accessibility file as a csv file like `sample_data/accessibility/***.csv`., by using an existing accessibility prediction tool (e.g. Raccess).
 
 #### 2.2 Model training
 ```
@@ -33,17 +33,14 @@ python3 train.py \
     --epoch 10 \
     --model FCN \
 ```
-You can check the options with `python train.py --help`.
+You can check the software options with `python train.py --help`.
 
-After successful training, trained weights (`.pth`), scatter plot (`.png`) and logs (`.log`) are created.
+Successful training produces trained weights (`.pth`), scatter plots (`.png`) and logs of the learning (`.log`) for the model.
 
-## 3. Test (Skip this section if you only want to make predictions)
-#### 3.1 Preparation of learned weights
+## 3. Test (You can skip this section when you only use the pre-trained DeepRaccess model)
+#### 3.1 Preparation of trained weights
 
-You can test the performance of DeepRaccess using the learned weights.  
-[Download the pre-trained weights here](https://drive.google.com/drive/folders/1xJOV2vIoVYCx6i9YY70CWwEGacQw8jTP?usp=sharing) (`FCN_***.pth` is the highest accuracy)  
-Then place them in `path/`.
-
+You can test the performance of the trained weights of DeepRaccess.  Please place the learned weights in the `path/` folder. You can use pre-trained weights in the `path/` folder.
 
 #### 3.2 Model test
 ```
@@ -58,16 +55,11 @@ python3 test.py \
     --model FCN \
     --pretrain path/FCN_structured.pth \
 ```
-You can check the options with `python test.py --help`.
-
-After successful test, output accessibility(OUT_FILE/`output.csv`) and scatter plot (`scatter.png`) are created.
+You can check the software options with `python test.py --help`. Successful test produces the predicted accessibility (`output.csv`) and scatter plot (`scatter.png`).
 
 ## 4. Prediction
-#### 4.1 Preparation of learned weights (same as 3.1)
-You can test the performance of DeepRaccess using the learned weights.  
-[Download the pre-trained weights here](https://drive.google.com/drive/folders/1xJOV2vIoVYCx6i9YY70CWwEGacQw8jTP?usp=sharing) (`FCN_***.pth` is the highest accuracy)  
-Then place them in `path/`.
-
+#### 4.1 Preparation of trained weights (as in 3.1)
+Please place the learned weights in the `path/` folder. You can use pre-trained weights in the `path/` folder.
 
 #### 4.2 Predicting Accessibility
 
@@ -81,6 +73,9 @@ python3 predict.py \
     --model FCN \
     --pretrain path/FCN_structured.pth
 ```
-You can check the options with `python predict.py --help`.
+You can check the software options with `python test.py --help`.
 
-After successful test, output accessibility file(OUT_FILE/`output.csv`) is created.
+Successful test produces the predicted accessibility (`output.csv`).
+
+## 5. Brief explanation of interpretation
+We used the fully convolutional network (FCN) for the network architecture. FCN does not use fully connected layers and is composed only of convolutional layers. We used a network of 40 convolutional layers with constant channel and unit sizes. The input RNA sequences are embedded into numerical vectors and fed into the neural networks. Our embedding first randomly generates six 120-dimensional numerical vectors corresponding to each of the six states: four RNA bases (A, C, G, U), one undetermined nucleotide (N) and padding. Please see our paper for implementation details.
